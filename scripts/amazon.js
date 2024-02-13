@@ -70,6 +70,14 @@ document.querySelectorAll('.js-add-to-cart')
           Quantity: 1
         });
       } else Cart[index].Quantity++;
+
+      let finalQuantity = 0;
+      
+      Cart.forEach((product) => {
+        finalQuantity += product.Quantity;
+      });
+
+      document.querySelector('.js-cart-quantity').innerHTML = finalQuantity;
     });
   });
 
