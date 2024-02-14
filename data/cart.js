@@ -1,9 +1,9 @@
 export let Cart = JSON.parse(localStorage.getItem('Cart')) || [];
 
 
-export function addToCart(productId) {
+export function addToCart(productId, quantity = 1) {
   let alreadyInCart;
-  let quantity = Number(document.querySelector(`.js-quantity-selector-${productId}`).value);
+  
   Cart.forEach((product) => {
     if (productId === product.productId)
       alreadyInCart = product;
@@ -14,6 +14,8 @@ export function addToCart(productId) {
       quantity
     });
   } else alreadyInCart.quantity += quantity;
+
+  localStorage.setItem('Cart',JSON.stringify(Cart));
 }
 
 export function deleteFromCart(productId) {
@@ -24,6 +26,7 @@ export function deleteFromCart(productId) {
   });
   Cart = newCart;
   document.querySelector(`.js-cart-item-container-${productId}`).remove();
+  localStorage.setItem('Cart',JSON.stringify(Cart));
 }
 
 export function checkCartQuantity() {
@@ -31,6 +34,22 @@ export function checkCartQuantity() {
   Cart.forEach((product) => {
     finalQuantity += product.quantity;
   });
+  return finalQuantity;
+}
 
-  document.querySelector('.js-cart-quantity').innerHTML = finalQuantity;
+export function updateCart (productId, quantity){
+  Cart.forEach((item)=>{
+    if(item.productId === productId && quantity > 0) item.quantity = quantity;
+    else if (item.productId === productId && quantity === 0) deleteFromCart(productId);
+  });
+  localStorage.setItem('Cart',JSON.stringify(Cart));  
+}
+
+export function checkItemQuantity(productId){
+  let productQuantity = 0;
+  Cart.forEach((item) => {
+    if(item.productId === productId)
+      productQuantity = item.quantity;
+  });
+  return productQuantity;
 }
