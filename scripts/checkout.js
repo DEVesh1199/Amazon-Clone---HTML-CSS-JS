@@ -2,6 +2,7 @@ import { Cart, deleteFromCart, checkCartQuantity, checkItemQuantity, updateCart,
 import { products } from "../data/products.js";
 import { deliveryOptions } from "../data/deliveryOptions.js";
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
+import {cartSummaryGenerator} from './orderSummary.js';
 
 function checkoutCart (){
   let checkoutCartHTML = '';
@@ -15,7 +16,8 @@ function checkoutCart (){
     checkoutCartHTML += `
     <div class="cart-item-container js-cart-item-container-${item.productId}">
       <div class="delivery-date">
-        Delivery date: Tuesday, June 21
+        Delivery date:
+        ${deliveryDateUpdate(item.deliveryId)}
       </div>
 
       <div class="cart-item-details-grid">
@@ -68,6 +70,7 @@ function checkoutCart (){
       deleteButton.addEventListener('click', ()=>{
         deleteFromCart(productId);
         checkoutCart();
+        cartSummaryGenerator();
       });
     });
 
@@ -90,6 +93,7 @@ function checkoutCart (){
         updateCart(productId, newQuantity);
         document.querySelector('.js-checkout-items').innerHTML = `${checkCartQuantity()} items`;
         document.querySelector(`.js-quantity-label-${productId}`).innerHTML = `${checkItemQuantity(productId)} items`;
+        cartSummaryGenerator();
       });
     });
 
@@ -127,9 +131,20 @@ function checkoutCart (){
         matchedProduct.deliveryId = deliveryId;
         localStorage.setItem('Cart',JSON.stringify(Cart));  
         checkoutCart();
-      })
+        cartSummaryGenerator();
     });
+  });
 
+  function deliveryDateUpdate(deliveryid){
+    let deliveryDay = '';
+    deliveryOptions.forEach((option)=>{
+      if(deliveryid === option.deliveryId){
+        deliveryDay = `${(dayjs().add(option.deliveryDays,'day')).format('dddd, MMMM D')}.`
+      }
+
+    });
+    return deliveryDay;
+  }
   document.querySelector('.js-checkout-items').innerHTML = `${checkCartQuantity()} items`;
 }
 
